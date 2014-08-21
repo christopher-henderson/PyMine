@@ -34,12 +34,20 @@ def SelfAwareDecorator(outerFunction):
         def wrapper(innerFunction):
             @wraps(innerFunction)
             def inner(self, *funcArgs, **funcKwargs):
-                #===============================================================
-                # Give the innerFunction "self" and any arguments collected thus far via
-                # the functools "partial". The returned function is passed onto the decorator
-                # where supplemental arguments can be given if desired.
-                #===============================================================
-                f = partial(innerFunction, self, *funcArgs, **funcKwargs)
+                @wraps(innerFunction)
+                def f(*innerArgs, **innerKwargs):
+                    #===========================================================
+                    # We wrap the innerFunction one last time so that we can
+                    # pass supplemental arguments while in the decorating method.
+                    # It also allows us to make reference to the innerFunction's
+                    # attributes (i.e. func_name, doc string, etc.) while in the
+                    # decorator (these things are lost when using functools.partial).
+                    # Plus it is much more helpful to see the proper traceback if you do
+                    # something bad with the innerFunction while in the decorator. 
+                    #===========================================================
+                    finalArgs = innerArgs + funcArgs
+                    finalKwargs = dict(innerKwargs.items() + funcKwargs.items())
+                    return innerFunction(self, *finalArgs, **finalKwargs)
                 return outerFunction(self, f, *decArgs, **decKwargs)
             return inner
         return wrapper
