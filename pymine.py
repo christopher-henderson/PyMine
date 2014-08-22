@@ -28,8 +28,8 @@ def main(interactive, args):
             command = raw_input('>>> ').strip()
     else:
         pymine.runCommand(args)
-   
+  
 try:
     main()
-except Exception as error:
+except KeyboardInterrupt as error:
     print (error)
