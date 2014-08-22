@@ -29,7 +29,7 @@ def main(interactive, args):
     else:
         pymine.runCommand(args)
    
-#try:
-main()
-#except Exception as error:
-#    print (error)
+try:
+    main()
+except Exception as error:
+    print (error)
