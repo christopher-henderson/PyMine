@@ -1,26 +1,18 @@
-from __future__ import absolute_import
-import sys
 import os
-from minecraft import Minecraft
+from config import *
+from classes.minecraft import Minecraft
 from decorators import (Daemonize, BindToSocket)
 
-minecraft = sys.argv[1]
-pidfile = sys.argv[2]
-socketFile = sys.argv[3]
-min_mem = sys.argv[4]
-max_mem = sys.argv[5]
-uid = sys.argv[6]
-gid = sys.argv[7]
-home = os.path.dirname(minecraft)
+home = os.path.dirname(MINECRAFT)
 
-@Daemonize(uid, gid, pidfile, home, 0o002)
-@BindToSocket(socketFile)
-def mainloop(sock):
+@Daemonize(UID, GID, PIDFILE, home, 0o002)
+@BindToSocket(UNIX_SOCKET)
+def main(sock):
     cmd = ['java',
-           '-Xmx{MAX}'.format(MAX=max_mem),
-           '-Xms{MIN}'.format(MIN=min_mem),
+           '-Xmx{MAX}'.format(MAX=JAVA_MAX_MEMORY),
+           '-Xms{MIN}'.format(MIN=JAVA_MIN_MEMORY),
            '-jar',
-           '{PATH}'.format(PATH=minecraft),
+           '{PATH}'.format(PATH=MINECRAFT),
            'nogui'
            ]
     server = Minecraft(cmd)
@@ -59,4 +51,4 @@ def mainloop(sock):
             command = connection.recv(1024)
         connection.close()
 
-mainloop()
+main()
