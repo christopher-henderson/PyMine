@@ -1,8 +1,8 @@
 from __future__ import absolute_import
 import sys
 import os
-from daemon_classes.minecraft import Minecraft
-from tools.decorators import (Daemonize, BindToSocket)
+from minecraft import Minecraft
+from decorators import (Daemonize, BindToSocket)
 
 minecraft = sys.argv[1]
 pidfile = sys.argv[2]

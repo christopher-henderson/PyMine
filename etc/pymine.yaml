@@ -1,0 +1,7 @@
+BACKUP_DIR: /opt/minecraft/backups
+JAVA_MAX_MEMORY: 1G
+JAVA_MIN_MEMORY: 1G
+MINECRAFT: /opt/minecraft/minecraft.jar
+PIDFILE: /var/run/pymine/pymine.pid
+UNIX_SOCKET: /var/run/pymine/pymine.sock
+USER: minecraft

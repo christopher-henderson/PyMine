@@ -8,7 +8,7 @@ import tarfile
 from time import time, strftime
 SOCKET_TIMEOUT = 30
 
-class ServiceHandler:
+class DaemonHandler:
     
     def __init__(self, SCRIPT_HOME, MINECRAFT, PIDFILE, UNIX_SOCKET, MIN_MEMORY, MAX_MEMORY, USER, BACKUP):
         self.scriptHome = SCRIPT_HOME
@@ -142,7 +142,7 @@ class ServiceHandler:
             # Since you can't handle a SIGKILL this will happen if
             # you kill -9, so now we have to clean up the orphaned pidfile.
             #===========================================================
-        subprocess.Popen(['python', '{PATH}/pymine_daemon.py'.format(PATH=self.scriptHome), self.minecraft, self.pidfile, self.unix_socket, self.min_memory, self.max_memory, str(self.uid), str(self.gid)], close_fds=True, bufsize=1)
+        subprocess.Popen(['python', 'bin/pymineDaemon.py'.format(PATH=self.scriptHome), self.minecraft, self.pidfile, self.unix_socket, self.min_memory, self.max_memory, str(self.uid), str(self.gid)], close_fds=True, bufsize=1)
         self._connectToSocket()
         self.pid = self._getPID()
 
