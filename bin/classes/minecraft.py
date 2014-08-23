@@ -88,17 +88,18 @@ class Minecraft:
                 break
         attempts = 0
         while True:
-            #=======================================================================
-            # Without a non-zero sleep it is very common
-            # for the queue to hit the Empty exception while
-            # Minecraft is still printing out. This sleep
-            # is trivial to a human, but gives the machine
-            # time to do its thing. This value tested out fine
-            # on my machines, but you can adjust it if you're
-            # running into truncated outputs or, conversely, want
-            # the response to be even snappier. 0.0001 is 10kHz
-            # polling and appears to be a good mix of speed and reliability.
-            #=======================================================================
+            #===================================================================
+            # @TODO This should really be in the config file since it can easily be tuned
+            # depending on the machine this is running on. Put it under a "Don't
+            # touch unless you know what you're doing" section.
+            #
+            # Minecraft really has no idea that this Python is controlling it. As such, it
+            # doesn't do nice things like send STOP signals for output, leading to this code
+            # not really being able to tell when Minecraft is done talking. How I got around this
+            # was to repeatedly attempt to retrieve from the stdout queue at a reduced frequency
+            # (set to 1kHz). Once MaxAttempts of consecutive Queue.Empty exceptions are hit we give up
+            # and conclude that Minecraft has gone silent.
+            #===================================================================
             sleep(pollingPeriod)
             try:
                 yield sub('\n', '', self.queue.get_nowait())

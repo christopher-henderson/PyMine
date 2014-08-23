@@ -1,4 +1,4 @@
-BACKUP_DIR: /opt/minecraft/backups
+BACKUP_DIR: /opt/minecraft/backup
 JAVA_MAX_MEMORY: 1G
 JAVA_MIN_MEMORY: 1G
 MINECRAFT: /opt/minecraft/minecraft.jar
