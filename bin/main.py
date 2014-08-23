@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from __future__ import print_function
-from tools.decorators import ParseArgs
-from service_classes.serviceHandler import ServiceHandler
+from bin.decorators import ParseArgs
+from bin.daemonHandler import DaemonHandler
 import readline
 import sys
 import os
@@ -17,7 +17,7 @@ HOME = os.path.dirname(os.path.realpath(__file__))
 
 @ParseArgs(sys.argv[:])
 def main(interactive, args):
-    pymine = ServiceHandler(HOME, MINECRAFT, PIDFILE, UNIX_SOCKET, MIN_MEMORY, MAX_MEMORY, USER, BACKUP_DIR)
+    pymine = DaemonHandler(HOME, MINECRAFT, PIDFILE, UNIX_SOCKET, MIN_MEMORY, MAX_MEMORY, USER, BACKUP_DIR)
     if interactive:
         readline.parse_and_bind('set editing-mode vi')
         print ('PyMine version 0.1')
@@ -29,7 +29,9 @@ def main(interactive, args):
     else:
         pymine.runCommand(args)
   
-try:
-    main()
-except KeyboardInterrupt as error:
-    print (error)
+#===============================================================================
+# try:
+#     main()
+# except KeyboardInterrupt as error:
+#     print (error)
+#===============================================================================

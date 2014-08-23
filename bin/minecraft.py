@@ -2,7 +2,7 @@ import subprocess
 import psutil
 from time import sleep
 from re import sub
-from tools.decorators import (Threadify, SelfAwareDecorator)
+from decorators import (Threadify, SelfAwareDecorator)
 try:
     import Queue
 except ImportError:
