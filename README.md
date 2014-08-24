@@ -18,6 +18,15 @@ $ pymine stop</p>
 
 If PyMine is executed with no arguments then an interactive session is started.
 
+Creation of world backups are supported through the "backup" command.
+
+A service file has been included for controlling the daemon through systemd.
+
+$ sudo ln -s pymine /usr/bin/pymine<br>
+$ sudo cp pymine.service /usr/lib/systemd/system<br>
+$ sudo systemctl enable pymine<br>
+$ sudo systemctl start pymine<br>
+
 <p><strong>Dependencies:</strong><br>
 python-daemon<br>
 pyyaml<br>
