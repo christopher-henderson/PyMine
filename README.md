@@ -8,13 +8,13 @@ PyMine
 
 PyMine is a traditional Unix daemon that manages a Minecraft subprocess. Beyond the small set of control keywords (start|stop|restart|status|backup) communication with the Minecraft server via PyMine is completely transparent. This allows for awesomeness such as:
 
-<p>$ pymine start</p>
-<p>$ pymine weather rain</p>
-<p>$ pymine weather clear</p>
-<p>$ pymine time set 6000</p>
-<p>$ pymine kill BillBobb</p>
-<p>$ pymine say STOP HITTING YOURSELF!</p>
-<p>$ pymine stop</p>
+<div>$ pymine start
+$ pymine weather rain
+$ pymine weather clear
+$ pymine time set 6000
+$ pymine kill BillBobb
+$ pymine say STOP HITTING YOURSELF!
+$ pymine stop</div>
 
 If PyMine is executed with no arguments then an interactive session is started.
 
