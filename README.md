@@ -1,7 +1,7 @@
 PyMine
 ======
 
-<a href="https://github.com/christopher-henderson/PyMine"><img style="text-align: center;" src="https://cloud.githubusercontent.com/assets/8518514/4023774/0eca78ec-2ba6-11e4-8844-81199da62058.jpeg"/></a>
+<div style="text-align: center;"><a href="https://github.com/christopher-henderson/PyMine"><img src="https://cloud.githubusercontent.com/assets/8518514/4023774/0eca78ec-2ba6-11e4-8844-81199da62058.jpeg"/></a></div>
 
 The Minecraft server for Linux is not particularly suited for being...well...a server. The Java process runs in the foreground, taking up your entire session. This leads many people to resort to tactics, such as Screen, for shoving the process into the background. The result is something that is not really well suited for on-the-fly control of the Minecraft server and does not work well with modern init systems.
 
