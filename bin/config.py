@@ -7,6 +7,7 @@ HOME = os.path.split(os.path.dirname(os.path.realpath(__file__)))[0]
 with open('{HOME}/etc/pymine.yaml'.format(HOME=HOME)) as conf:
     config = yaml.load(conf)
 
+BIN = os.path.dirname(os.path.realpath(__file__))
 BACKUP_DIR = os.path.expanduser(config['BACKUP_DIR'])
 MINECRAFT = os.path.expanduser(config['MINECRAFT'])
 PIDFILE = os.path.expanduser(config['PIDFILE'])
@@ -50,7 +51,6 @@ def _ensureDirectory(DIR):
     try:
         os.stat(DIR)
     except OSError:
-        
             try:
                 os.mkdir(DIR, 0750)
                 os.chown(DIR, UID, GID)
@@ -76,7 +76,7 @@ def _ensurePermissions():
 def validateConfig():
     errors = []
     errors.append(_ensureIDs())
-    if not errors:
+    if not any(errors):
         errors.append(_ensureDirectory(SOCKET_HOME))
         errors.append(_ensureDirectory(PIDFILE_HOME))
         errors.append(_ensureDirectory(BACKUP_DIR))

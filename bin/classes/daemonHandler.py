@@ -11,10 +11,10 @@ from data.copyright import printCopyright
 SOCKET_TIMEOUT = 30
 
 class DaemonHandler:
-    
-    def __init__(self, SCRIPT_HOME):
+
+    def __init__(self):
         validateConfig()
-        self.scriptHome = SCRIPT_HOME
+        self.scriptHome = os.path.expanduser(BIN)
         self.backupDir = os.path.expanduser(BACKUP_DIR)
         self.minecraft = os.path.expanduser(MINECRAFT)
         self.pidfile = os.path.expanduser(PIDFILE)
