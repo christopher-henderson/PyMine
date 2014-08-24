@@ -14,15 +14,15 @@ class DaemonHandler:
 
     def __init__(self):
         validateConfig()
-        self.scriptHome = os.path.expanduser(BIN)
-        self.backupDir = os.path.expanduser(BACKUP_DIR)
-        self.minecraft = os.path.expanduser(MINECRAFT)
-        self.pidfile = os.path.expanduser(PIDFILE)
-        self.min_memory = os.path.expanduser(JAVA_MIN_MEMORY)
-        self.max_memory = os.path.expanduser(JAVA_MAX_MEMORY)
-        self.unix_socket = os.path.expanduser(UNIX_SOCKET)
-        self.socketHome = os.path.dirname(UNIX_SOCKET)
-        self.pidHome = os.path.dirname(PIDFILE)
+        self.scriptHome = BIN
+        self.backupDir = BACKUP_DIR
+        self.minecraft = MINECRAFT
+        self.pidfile = PIDFILE
+        self.min_memory = JAVA_MIN_MEMORY
+        self.max_memory = JAVA_MAX_MEMORY
+        self.unix_socket = UNIX_SOCKET
+        self.socketHome = SOCKET_HOME
+        self.pidHome = PIDFILE_HOME
         self.uid = UID
         self.gid = GID
         self.pid = self._getPID()

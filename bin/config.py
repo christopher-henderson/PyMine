@@ -4,7 +4,7 @@ import pwd
 import sys
 
 HOME = os.path.split(os.path.dirname(os.path.realpath(__file__)))[0]
-with open('{HOME}/etc/pymine.yaml'.format(HOME=HOME)) as conf:
+with open('{HOME}/etc/pymine.yaml'.format(HOME=HOME), 'r') as conf:
     config = yaml.load(conf)
 
 BIN = os.path.dirname(os.path.realpath(__file__))
@@ -39,7 +39,7 @@ def _ensureIDs():
         error = True
     else:
         if os.geteuid() is not 0 and UID != os.geteuid():
-            print ('Unprivileged user. Either run this script as sudo or as the configured minecraft user.')
+            print ('Unprivileged user. Either run this script as sudo or as the configured Minecraft user.')
             error = True
     return error
 
