@@ -8,22 +8,22 @@ The Minecraft server for Linux is not particularly suited for being...well...a s
 
 PyMine is a traditional Unix daemon that manages a Minecraft subprocess. Beyond the small set of control keywords (start|stop|restart|status|backup) communication with the Minecraft server via PyMine is completely transparent. This allows for awesomeness such as:
 
-<p>$ pymine start<br>
+$ pymine start<br>
 $ pymine weather rain<br>
 $ pymine weather clear<br>
 $ pymine time set 6000<br>
 $ pymine kill BillBobb<br>
 $ pymine say STOP HITTING YOURSELF!<br>
-$ pymine stop</p>
+$ pymine stop
 
 If PyMine is executed with no arguments then an interactive session is started.
 
 Creation of world backups are supported through the "backup" command.
 
-A service file has been included for controlling the daemon through systemd.
+A systemd service file has been included for hook-ups into the init system.
 
 $ sudo ln -s pymine /usr/bin/pymine<br>
-$ sudo cp pymine.service /usr/lib/systemd/system<br>
+$ sudo mv pymine.service /usr/lib/systemd/system<br>
 $ sudo systemctl enable pymine<br>
 $ sudo systemctl start pymine<br>
 
