@@ -1,3 +1,5 @@
+from bin.sanityCheck.importCheck import checkImports
+checkImports()
 from bin.decorators import ParseArgs
 from bin.classes.daemonHandler import DaemonHandler
 import readline
