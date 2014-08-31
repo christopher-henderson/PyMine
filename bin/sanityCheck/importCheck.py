@@ -12,9 +12,9 @@ def checkImport(module):
         print (e)
         print ('You are appear to be missing the {MODULE} module.'.format(MODULE=module))
         print ('Try "sudo pip install {MOD_NAME}"'.format(MOD_NAME=imports[module]))
-        return False
-    else:
         return True
+    else:
+        return False
 
 def checkImports():
     errors = []
