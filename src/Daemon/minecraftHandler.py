@@ -55,6 +55,10 @@ class Minecraft(object):
         self.server.stdin.write('stop\n')
         self.server.wait()
 
+    def restart(self):
+        yield self.stop()
+        yield self.start()
+
     @CheckStatus(desiredStatus=True, msg='The Minecraft server is stopped.')
     @ManageStdout()
     def arbitrary(self, command):

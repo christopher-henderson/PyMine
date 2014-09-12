@@ -88,7 +88,7 @@ class ServerInterface(object):
             # 
             # The use here is to make sure that one coherent iterable is returned in both cases.
             #===================================================================
-            return chain(*[self.servers[server].stop() for server in self.__iter__() if match(regex, server)])
+            return chain(*[self.servers[server].start() for server in self.__iter__() if match(regex, server)])
 
     def stopServer(self, regex=None):
         '''
@@ -124,7 +124,7 @@ class ServerInterface(object):
         Returns a generator of the responses.
         '''
         if regex is None:
-            self.servers[self.using].stop()
+            self.servers[self.using].restart()
         else:
             #===================================================================
             # https://docs.python.org/2/library/itertools.html#itertools.chain
@@ -134,7 +134,9 @@ class ServerInterface(object):
             # 
             # The use here is to make sure that one coherent iterable is returned in both cases.
             #===================================================================
-            return chain(*[self.servers[server].stop() for server in self.__iter__() if match(regex, server)])
+            
+            # needs restasrt logic
+            return chain(*[self.servers[server].restart() for server in self.__iter__() if match(regex, server)])
 
     def forwardCommand(self, command, regex=None):
         '''
