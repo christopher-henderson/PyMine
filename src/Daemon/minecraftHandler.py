@@ -1,5 +1,6 @@
 import subprocess
 import psutil
+from itertools import chain
 from src.Utilities.selfAwareDecorator import SelfAwareDecorator
 from src.Daemon.stdoutStreamer import StdoutStreamer
 
@@ -56,8 +57,7 @@ class Minecraft(object):
         self.server.wait()
 
     def restart(self):
-        yield self.stop()
-        yield self.start()
+	return chain(self,stop(), self.start())
 
     @CheckStatus(desiredStatus=True, msg='The Minecraft server is stopped.')
     @ManageStdout()
