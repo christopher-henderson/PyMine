@@ -57,7 +57,7 @@ class Minecraft(object):
         self.server.wait()
 
     def restart(self):
-	return chain(self,stop(), self.start())
+	return chain(self.stop(), self.start())
 
     @CheckStatus(desiredStatus=True, msg='The Minecraft server is stopped.')
     @ManageStdout()
