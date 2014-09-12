@@ -1,7 +1,7 @@
 import subprocess
 import psutil
 from src.Utilities.selfAwareDecorator import SelfAwareDecorator
-from src.daemon.stdoutStreamer import StdoutStreamer
+from src.Daemon.stdoutStreamer import StdoutStreamer
 
 class Minecraft(object):
 
@@ -18,12 +18,12 @@ class Minecraft(object):
 
     @SelfAwareDecorator
     def CheckStatus(self, function, desiredStatus=None, msg=''):
-        if desiredStatus is self.getServerStatus():
+        if desiredStatus is self.serverStatus():
             return function()
         else:
             return [msg]
 
-    def getServerStatus(self):
+    def serverStatus(self):
         try:
             zombie = psutil.Process(self.server.pid).status()
         except (psutil.NoSuchProcess, AttributeError):
