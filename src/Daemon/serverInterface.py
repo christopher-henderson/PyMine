@@ -88,7 +88,7 @@ class ServerInterface(object):
             # 
             # The use here is to make sure that one coherent iterable is returned in both cases.
             #===================================================================
-            return chain(self.servers[server].stop() for server in self.__iter__() if match(regex, server))
+            return chain(*[self.servers[server].stop() for server in self.__iter__() if match(regex, server)])
 
     def stopServer(self, regex=None):
         '''
@@ -111,7 +111,7 @@ class ServerInterface(object):
             # 
             # The use here is to make sure that one coherent iterable is returned in both cases.
             #===================================================================
-            return chain(self.servers[server].stop() for server in self.__iter__() if match(regex, server))
+            return chain(*[self.servers[server].stop() for server in self.__iter__() if match(regex, server)])
 
     def restartServer(self, regex=None):
         '''
@@ -134,7 +134,7 @@ class ServerInterface(object):
             # 
             # The use here is to make sure that one coherent iterable is returned in both cases.
             #===================================================================
-            return chain(self.servers[server].stop() for server in self.__iter__() if match(regex, server))
+            return chain(*[self.servers[server].stop() for server in self.__iter__() if match(regex, server)])
 
     def forwardCommand(self, command, regex=None):
         '''
@@ -157,4 +157,4 @@ class ServerInterface(object):
             # 
             # The use here is to make sure that one coherent iterable is returned in both cases.
             #===================================================================
-            return chain(self.servers[server].arbitrary(command) for server in self.__iter__() if match(regex, server))
+            return chain(*[self.servers[server].arbitrary(command) for server in self.__iter__() if match(regex, server)])
