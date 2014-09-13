@@ -7,17 +7,18 @@ class ServerInterface(object):
     
     def __init__(self, **kwargs):
         self.servers = {serverName: Minecraft(javaArgs) for serverName,javaArgs in kwargs.items()}
-        self.using = None #@TODO Need to figure out a default
+        self.using = 'default' #@TODO Need to figure out a default
 
     def __iter__(self):
         for name in sorted((server for server in self.servers)):
             yield name
 
     def __enter__(self):
-        self.startServer(regex='*')
+        self.startServer(regex='.*')
+        return self
 
-    def __exit__(self):
-        self.stopServer(regex='*')
+    def __exit__(self, type, value, traceback):
+        self.stopServer(regex='.*')
 
     def addServer(self, serverName, javaArgs):
         '''
@@ -78,7 +79,7 @@ class ServerInterface(object):
         Returns a generator of the responses.
         '''
         if regex is None:
-            self.servers[self.using].start()
+            return self.servers[self.using].start()
         else:
             #===================================================================
             # https://docs.python.org/2/library/itertools.html#itertools.chain
@@ -115,16 +116,31 @@ class ServerInterface(object):
 
     def restartServer(self, regex=None):
         '''
-        Default behavior to is to stop the currently selected Minecraft
+        Default behavior to is to restart the currently selected Minecraft
         server.
         
         If a regular expression is given then all servers whose name matches
         the regular expression will be stopped.
         
-        Returns a generator of the responses.
+        Stopping and starting each server must be distinct steps, as such
+        this method returns a generator/itertools.chain object that itself
+        contains generators for the stop/start responses. That is, without a restart
+        method you would need something like this:
+        
+        for response in stop():
+            print (response)
+        for response in start():
+            print (response)
+            
+        With this restart method you still need two 'for' loops, but instead they
+        are nested, like so:
+        
+        for stopStart in restart():
+            for response in stopStart:
+                print (response)
         '''
         if regex is None:
-            self.servers[self.using].restart()
+            return self.servers[self.using].restart()
         else:
             #===================================================================
             # https://docs.python.org/2/library/itertools.html#itertools.chain
@@ -134,8 +150,6 @@ class ServerInterface(object):
             # 
             # The use here is to make sure that one coherent iterable is returned in both cases.
             #===================================================================
-            
-            # needs restasrt logic
             return chain(*[self.servers[server].restart() for server in self.__iter__() if match(regex, server)])
 
     def forwardCommand(self, command, regex=None):

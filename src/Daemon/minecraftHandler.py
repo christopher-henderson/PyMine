@@ -1,12 +1,14 @@
 import subprocess
 import psutil
-from itertools import chain
+from os.path import dirname
+from os import chdir
 from src.Utilities.selfAwareDecorator import SelfAwareDecorator
 from src.Daemon.stdoutStreamer import StdoutStreamer
 
 class Minecraft(object):
 
     def __init__(self, java_args):
+        self.directory = dirname(java_args[4])
         self.cmd = java_args
         self.server = None
         self.stdout = StdoutStreamer()
@@ -46,6 +48,7 @@ class Minecraft(object):
     @CheckStatus(desiredStatus=False, msg='The Minecraft server is running.')
     @ManageStdout(MaxAttempts=500)
     def start(self):
+        chdir(self.directory)
         self.server = subprocess.Popen(self.cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True, bufsize=1)
         self.stdout = StdoutStreamer(stdout=self.server.stdout)
         self.stdout.startStreamer()
@@ -57,7 +60,8 @@ class Minecraft(object):
         self.server.wait()
 
     def restart(self):
-	return chain(self.stop(), self.start())
+        yield self.stop()
+        yield self.start()
 
     @CheckStatus(desiredStatus=True, msg='The Minecraft server is stopped.')
     @ManageStdout()
