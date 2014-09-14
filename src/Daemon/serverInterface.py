@@ -10,11 +10,17 @@ class ServerInterface(object):
         self.using = 'default' #@TODO Need to figure out a default
 
     def __iter__(self):
-        for name in sorted((server for server in self.servers)):
-            yield name
+        for server in sorted(self.servers):
+            yield server
 
     def __enter__(self):
-        self.startServer(regex='.*')
+        for response in self.startServer(regex='.*'):
+            #===================================================================
+            # It is necessary to iterate over the returned
+            # generator, otherwise self is returned immediately
+            # despite the startup process being incomplete.
+            #===================================================================
+            pass
         return self
 
     def __exit__(self, type, value, traceback):
@@ -89,7 +95,7 @@ class ServerInterface(object):
             # 
             # The use here is to make sure that one coherent iterable is returned in both cases.
             #===================================================================
-            return chain(*[self.servers[server].start() for server in self.__iter__() if match(regex, server)])
+            return chain(*[self.servers[server].start() for server in self if match(regex, server)])
 
     def stopServer(self, regex=None):
         '''
@@ -112,7 +118,7 @@ class ServerInterface(object):
             # 
             # The use here is to make sure that one coherent iterable is returned in both cases.
             #===================================================================
-            return chain(*[self.servers[server].stop() for server in self.__iter__() if match(regex, server)])
+            return chain(*[self.servers[server].stop() for server in self if match(regex, server)])
 
     def restartServer(self, regex=None):
         '''
@@ -122,9 +128,9 @@ class ServerInterface(object):
         If a regular expression is given then all servers whose name matches
         the regular expression will be stopped.
         
-        Stopping and starting each server must be distinct steps, as such
+        Stopping and starting each server MUST be distinct steps, as such
         this method returns a generator/itertools.chain object that itself
-        contains generators for the stop/start responses. That is, without a restart
+        contains two generators for the stop/start responses. That is, without a restart
         method you would need something like this:
         
         for response in stop():
@@ -150,7 +156,7 @@ class ServerInterface(object):
             # 
             # The use here is to make sure that one coherent iterable is returned in both cases.
             #===================================================================
-            return chain(*[self.servers[server].restart() for server in self.__iter__() if match(regex, server)])
+            return chain(*[self.servers[server].restart() for server in self if match(regex, server)])
 
     def forwardCommand(self, command, regex=None):
         '''
@@ -173,4 +179,4 @@ class ServerInterface(object):
             # 
             # The use here is to make sure that one coherent iterable is returned in both cases.
             #===================================================================
-            return chain(*[self.servers[server].arbitrary(command) for server in self.__iter__() if match(regex, server)])
+            return chain(*[self.servers[server].arbitrary(command) for server in self if match(regex, server)])
