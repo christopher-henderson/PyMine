@@ -1,15 +1,16 @@
 import subprocess
 import psutil
-from os.path import dirname
+from shlex import split
 from os import chdir
 from src.Utilities.selfAwareDecorator import SelfAwareDecorator
 from src.Daemon.stdoutStreamer import StdoutStreamer
 
 class Minecraft(object):
 
-    def __init__(self, java_args):
-        self.directory = dirname(java_args[4])
-        self.cmd = java_args
+    def __init__(self, config):
+        self.directory = config.get('WORLD_DIR')
+        self.cmd = split(config.get('JAVA'))
+        self.cmd.insert(0, 'java')
         self.server = None
         self.stdout = StdoutStreamer()
 

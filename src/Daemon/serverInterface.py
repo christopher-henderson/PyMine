@@ -1,13 +1,15 @@
 from re import match
 from itertools import chain
 from src.Daemon.minecraftHandler import Minecraft
+from src.Utilities.configReader import ConfigReader
 import src.Utilities.PyMineExceptions as PyMineExceptions
 
 class ServerInterface(object):
     
-    def __init__(self, **kwargs):
-        self.servers = {serverName: Minecraft(javaArgs) for serverName,javaArgs in kwargs.items()}
-        self.using = 'default' #@TODO Need to figure out a default
+    def __init__(self):
+        self.config = ConfigReader()
+        self.servers = {serverName: Minecraft(config) for serverName,config in self.config.getMinecraftConfig().items()}
+        self.using = self.config.getDefault()
 
     def __iter__(self):
         for server in sorted(self.servers):
