@@ -3,13 +3,13 @@
 ##########################################
 # The absolute path to the PyMine daemon's PID.
 # Default: /var/run/pymine/pymine.pid
-PIDFILE: /var/run/pymine/pymine.pid
+PIDFILE: /opt/minecraft/pymine.pid
 
 ##########################################
 # The absolute path for the Unix socket that the
 # PyMine service will use to communicate with the daemon.
 # Default: /var/run/pymine/pymine.sock
-UNIX_SOCKET: /var/run/pymine/pymine.sock
+UNIX_SOCKET: /opt/minecraft/pymine.sock
 
 ##########################################
 # The user that the PyMine daemon will run as.
@@ -24,7 +24,7 @@ servers:
     BACKUP_DIR: /opt/minecraft/survival/backup
     WORLD_DIR: /opt/minecraft/survival
     JAVA:
-      -Xmx1G -Xms1G -jar /opt/minecraft/minecraft.jar nogui
+      -Xmx1G -Xms1G -jar /opt/minecraft/survival/minecraft.jar nogui
 
   creative.pymine.org:
     GAME_MODE: creative
@@ -32,4 +32,4 @@ servers:
     BACKUP_DIR: /opt/minecraft/creative/backup
     WORLD_DIR: /opt/minecraft/creative
     JAVA:
-      -Xmx2G -Xms2G -jar /opt/minecraft/minecraft.jar nogui
+      -Xmx2G -Xms2G -jar /opt/minecraft/creative/minecraft.jar nogui

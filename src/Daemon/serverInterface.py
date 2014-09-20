@@ -1,8 +1,8 @@
-from re import match
+from re import match, error
 from itertools import chain
-from src.Daemon.minecraftHandler import Minecraft
-from src.Utilities.configReader import ConfigReader
-import src.Utilities.PyMineExceptions as PyMineExceptions
+from Daemon.minecraftHandler import Minecraft
+from Utilities.configReader import ConfigReader
+import Utilities.PyMineExceptions as PyMineExceptions
 
 class ServerInterface(object):
     
@@ -16,7 +16,7 @@ class ServerInterface(object):
             yield server
 
     def __enter__(self):
-        for response in self.startServer(regex='.*'):
+        for response in self.startServer(pattern='.*'):
             #===================================================================
             # It is necessary to iterate over the returned
             # generator, otherwise self is returned immediately
@@ -26,9 +26,9 @@ class ServerInterface(object):
         return self
 
     def __exit__(self, type, value, traceback):
-        self.stopServer(regex='.*')
+        self.stopServer(pattern='.*')
 
-    def addServer(self, serverName, javaArgs):
+    def addServer(self, javaArgs, pattern=None):
         '''
         Adds the specified Minecraft server to the currently running
         instance of PyMine. The new Minecraft server is not automatically
@@ -37,12 +37,12 @@ class ServerInterface(object):
         Raises PyMineExceptions.DuplicateMinecraftServer if there already
         exists a Minecraft server by that name.
         '''
-        if serverName not in self.servers:
-            self.servers[serverName] = Minecraft(javaArgs)
+        if pattern not in self.servers:
+            self.servers[pattern] = Minecraft(javaArgs)
         else:
-            raise PyMineExceptions.DuplicateMinecraftServer(serverName)
+            raise PyMineExceptions.DuplicateMinecraftServer(pattern)
 
-    def removeServer(self, serverName):
+    def removeServer(self, pattern=None):
         '''
         Cleanly stops and removes the specified Minecraft server from
         the currently running instance of PyMine.
@@ -50,23 +50,23 @@ class ServerInterface(object):
         Raises PyMineExceptions.NoSuchMinecraftServer if the name of
         the Minecraft server could not be found.
         '''
-        if serverName in self.servers:
-            self.servers[serverName].stop()
-            del self.servers[serverName]
+        if pattern in self.servers:
+            self.servers[pattern].stop()
+            del self.servers[pattern]
         else:
-            raise PyMineExceptions.NoSuchMinecraftServer(serverName)
+            raise PyMineExceptions.NoSuchMinecraftServer(pattern)
     
-    def useServer(self, serverName):
+    def useServer(self, pattern=None):
         '''
         Changes the interface to handling the specified Minecraft server.
         
         Raises PyMineExceptions.NoSuchMinecraftServer if the name of
         the Minecraft server could not be found.
         '''
-        if serverName in self.servers:
-            self.using = serverName
+        if pattern in self.servers:
+            self.using = pattern
         else:
-            raise PyMineExceptions.NoSuchMinecraftServer(serverName)
+            raise PyMineExceptions.NoSuchMinecraftServer(pattern)
 
     #===========================================================================
     # @TODO Issue #9.
@@ -76,7 +76,7 @@ class ServerInterface(object):
     # ...could tweak the SelfAwareDecorator
     #===========================================================================
 
-    def startServer(self, regex=None):
+    def startServer(self, pattern=None):
         '''
         Default behavior to is to start the currently selected Minecraft
         server.
@@ -86,7 +86,7 @@ class ServerInterface(object):
 
         Returns a generator of the responses.
         '''
-        if regex is None:
+        if pattern is None:
             return self.servers[self.using].start()
         else:
             #===================================================================
@@ -97,9 +97,9 @@ class ServerInterface(object):
             # 
             # The use here is to make sure that one coherent iterable is returned in both cases.
             #===================================================================
-            return chain(*[self.servers[server].start() for server in self if match(regex, server)])
+            return chain(*[self.servers[server].start() for server in self if match(pattern, server)])
 
-    def stopServer(self, regex=None):
+    def stopServer(self, pattern=None):
         '''
         Default behavior to is to stop the currently selected Minecraft
         server.
@@ -109,7 +109,7 @@ class ServerInterface(object):
 
         Returns a generator of the responses.
         '''
-        if regex is None:
+        if pattern is None:
             return self.servers[self.using].stop()
         else:
             #===================================================================
@@ -120,9 +120,9 @@ class ServerInterface(object):
             # 
             # The use here is to make sure that one coherent iterable is returned in both cases.
             #===================================================================
-            return chain(*[self.servers[server].stop() for server in self if match(regex, server)])
+            return chain(*[self.servers[server].stop() for server in self if match(pattern, server)])
 
-    def restartServer(self, regex=None):
+    def restartServer(self, pattern=None):
         '''
         Default behavior to is to restart the currently selected Minecraft
         server.
@@ -147,7 +147,7 @@ class ServerInterface(object):
             for response in stopStart:
                 print (response)
         '''
-        if regex is None:
+        if pattern is None:
             return self.servers[self.using].restart()
         else:
             #===================================================================
@@ -158,9 +158,9 @@ class ServerInterface(object):
             # 
             # The use here is to make sure that one coherent iterable is returned in both cases.
             #===================================================================
-            return chain(*[self.servers[server].restart() for server in self if match(regex, server)])
+            return chain(*[self.servers[server].restart() for server in self if match(pattern, server)])
 
-    def forwardCommand(self, command, regex=None):
+    def forwardCommand(self, command, pattern=None):
         '''
         Default behavior to is to forward a command to the currently selected Minecraft
         server.
@@ -170,7 +170,7 @@ class ServerInterface(object):
         
         Returns a generator of the responses.
         '''
-        if regex is None:
+        if pattern is None:
             return self.servers[self.using].arbitrary(command)
         else:
             #===================================================================
@@ -181,4 +181,7 @@ class ServerInterface(object):
             # 
             # The use here is to make sure that one coherent iterable is returned in both cases.
             #===================================================================
-            return chain(*[self.servers[server].arbitrary(command) for server in self if match(regex, server)])
+            try:
+                return chain(*[self.servers[server].arbitrary(command) for server in self if match(pattern, server)])
+            except error as e:
+                raise PyMineExceptions.InvalidRegularExpression(pattern, e)

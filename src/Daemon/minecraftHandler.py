@@ -2,8 +2,8 @@ import subprocess
 import psutil
 from shlex import split
 from os import chdir
-from src.Utilities.selfAwareDecorator import SelfAwareDecorator
-from src.Daemon.stdoutStreamer import StdoutStreamer
+from Utilities.selfAwareDecorator import SelfAwareDecorator
+from Daemon.stdoutStreamer import StdoutStreamer
 
 class Minecraft(object):
 

@@ -1,5 +1,6 @@
 from yaml import load
 from os.path import dirname
+from pwd import getpwnam
 
 class ConfigReader(object):
 
@@ -16,7 +17,7 @@ class ConfigReader(object):
     def __iter__(self):
         for section in self.config:
             yield self.config[section]
-        
+
     def loadConfig(self, config):
         with open(config) as conf:
             self.config = load(conf)
@@ -32,7 +33,17 @@ class ConfigReader(object):
     def getMinecraftConfig(self):
         return {server:config for server,config in self.config.get('servers').items()}
 
-    def getDaemonConfig(self):
-        return {section:config for section,config in self.config.items() if section != 'servers'}
+    def getUID(self):
+        return getpwnam(self.config.get('USER')).pw_uid
 
+    def getGID(self):
+        return getpwnam(self.config.get('USER')).pw_gid
 
+    def getPIDFile(self):
+        return self.config.get('PIDFILE')
+
+    def getSocket(self):
+        return self.config.get('UNIX_SOCKET')
+
+    def getUmask(self):
+        return self.config.get('UMASK')

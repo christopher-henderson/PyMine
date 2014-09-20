@@ -1,4 +1,4 @@
-from src.Utilities.threadify import Threadify
+from Utilities.threadify import Threadify
 from re import sub
 from time import sleep
 try:

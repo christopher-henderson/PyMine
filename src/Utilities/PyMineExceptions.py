@@ -1,6 +1,13 @@
 class PyMineException(Exception):
     pass
 
+class InvalidRegularExpression(PyMineException):
+    def __init__(self, pattern, error):
+        self.pattern = pattern
+        self.error = error
+    def __str__(self):
+        return "{PATTERN} appears to be an invalid regular expression. Error: {ERROR}".format(PATTERN=self.pattern, ERROR=self.error)
+
 class NoSuchMinecraftServer(PyMineException):
     def __init__(self, name):
         self.name = name
