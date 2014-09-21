@@ -1,4 +1,5 @@
-from Utilities.parser import Parser
+from Daemon.Utilities.parser import Parser
+from Common.PyMineExceptions import *
 
 class Communicator(object):
 
@@ -20,18 +21,23 @@ class Communicator(object):
 
     def execute(self, userInput):
         command,pattern = Parser.parse(userInput)
-        if command in self.commandMap:
-            response = self.commandMap[command](pattern=pattern)
+        try:
+            if command in self.commandMap:
+                response = self.commandMap[command](pattern=pattern)
+            else:
+                response = self.multicaster.forwardCommand(command, pattern=pattern)
+        except PyMineException as e:
+            self._sendResponse([e])
         else:
-            response = self.multicaster.forwardCommand(command, pattern=pattern)
-        if command == 'restart':
-            self._sendNestedResponse(response)
-        else:
-            self._sendResponse(response)
+            if command == 'restart':
+                self._sendNestedResponse(response)
+            else:
+                self._sendResponse(response)
 
     def _sendResponse(self, response):
         for line in response:
             self.socket.send(line)
+            #print line
 
     def _sendNestedResponse(self, response):
         for generator in response:

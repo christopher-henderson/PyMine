@@ -1,6 +1,8 @@
+from __future__ import absolute_import
 from functools import wraps
-from Utilities.configReader import ConfigReader
+from Common.configReader import ConfigReader
 import daemon
+import daemon.pidfile
 
 def Daemonize(function):
     '''

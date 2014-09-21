@@ -6,7 +6,7 @@ class Parser(object):
 
     @staticmethod
     def _getPattern(tokens):
-        return Parser._translate(tokens[1]) if len(tokens) > 1 else None
+        return Parser._translate(tokens[1]) if len(tokens) > 1 and tokens[1] else None
 
     @staticmethod
     def _translate(pattern):

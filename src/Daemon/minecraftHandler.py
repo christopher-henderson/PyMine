@@ -1,8 +1,9 @@
+from __future__ import absolute_import
 import subprocess
 import psutil
 from shlex import split
 from os import chdir
-from Utilities.selfAwareDecorator import SelfAwareDecorator
+from Common.selfAwareDecorator import SelfAwareDecorator
 from Daemon.stdoutStreamer import StdoutStreamer
 
 class Minecraft(object):

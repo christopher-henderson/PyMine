@@ -1,8 +1,9 @@
+from __future__ import absolute_import
 from re import match, error
 from itertools import chain
 from Daemon.minecraftHandler import Minecraft
-from Utilities.configReader import ConfigReader
-import Utilities.PyMineExceptions as PyMineExceptions
+from Common.configReader import ConfigReader
+import Common.PyMineExceptions as PyMineExceptions
 
 class ServerInterface(object):
     
@@ -67,6 +68,7 @@ class ServerInterface(object):
             self.using = pattern
         else:
             raise PyMineExceptions.NoSuchMinecraftServer(pattern)
+        return ['PyMine: Using {NAME}'.format(NAME=pattern)]
 
     #===========================================================================
     # @TODO Issue #9.
@@ -97,7 +99,10 @@ class ServerInterface(object):
             # 
             # The use here is to make sure that one coherent iterable is returned in both cases.
             #===================================================================
-            return chain(*[self.servers[server].start() for server in self if match(pattern, server)])
+            try:
+                return chain(*[self.servers[server].start() for server in self if match(pattern, server)])
+            except error as e:
+                raise PyMineExceptions.InvalidRegularExpression(pattern, e)
 
     def stopServer(self, pattern=None):
         '''
@@ -120,7 +125,10 @@ class ServerInterface(object):
             # 
             # The use here is to make sure that one coherent iterable is returned in both cases.
             #===================================================================
-            return chain(*[self.servers[server].stop() for server in self if match(pattern, server)])
+            try:
+                return chain(*[self.servers[server].stop() for server in self if match(pattern, server)])
+            except error as e:
+                raise PyMineExceptions.InvalidRegularExpression(pattern, e)
 
     def restartServer(self, pattern=None):
         '''
@@ -158,7 +166,10 @@ class ServerInterface(object):
             # 
             # The use here is to make sure that one coherent iterable is returned in both cases.
             #===================================================================
-            return chain(*[self.servers[server].restart() for server in self if match(pattern, server)])
+            try:
+                return chain(*[self.servers[server].restart() for server in self if match(pattern, server)])
+            except error as e:
+                raise PyMineExceptions.InvalidRegularExpression(pattern, e)
 
     def forwardCommand(self, command, pattern=None):
         '''

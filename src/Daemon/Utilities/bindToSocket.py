@@ -1,4 +1,5 @@
-from Utilities.configReader import ConfigReader
+from __future__ import absolute_import
+from Common.configReader import ConfigReader
 from os import (stat, remove)
 import socket
 
