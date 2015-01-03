@@ -1,9 +1,9 @@
 from __future__ import absolute_import
 from re import match, error
 from itertools import chain
-from Daemon.minecraftHandler import Minecraft
-from Common.configReader import ConfigReader
-import Common.PyMineExceptions as PyMineExceptions
+from src.daemon.minecraftHandler import Minecraft
+from src.common.configReader import ConfigReader
+from src import PyMineExceptions
 
 class ServerInterface(object):
     

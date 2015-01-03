@@ -1,57 +1,54 @@
 from __future__ import absolute_import
-from Common.threadify import Threadify
+from src.tools import Threaded
 from re import sub
 from time import sleep
 try:
-    import Queue
+    #===========================================================================
+    # Python 2
+    #===========================================================================
+    from Queue import Queue, Full, Empty
 except ImportError:
-    import queue as Queue
+    #===========================================================================
+    # Python 3
+    #===========================================================================
+    from queue import Queue, Full, Empty
 
 class StdoutStreamer(object):
 
     def __init__(self, stdout=None):
-        self.queue = Queue.Queue()
+        self.queue = Queue()
         self.stdout = stdout
 
-    @Threadify
+    @Threaded
     def startStreamer(self):
+        '''Starts this StdoutStreamer's reader.'''
         for line in iter(self.stdout.readline, b''):
             try:
                 self.queue.put(line)
-            except Queue.Full:
+            except Full:
                 self.queue.get_nowait()
                 self.queue.put(line)
 
     def flush(self):
+        '''Flush the StdoutStreamer'''
         #=======================================================================
         # The queue is likely to have a bunch of history
         # in it that we need to flush before we run a command.
         #=======================================================================
-        while True:
-            try:
-                self.queue.get_nowait()
-            except Queue.Empty:
-                break
+        while not self.queue.empty():
+            self.queue.get_nowait()
 
     def retrieve(self, pollingPeriod=0.001, MaxAttempts=50):
-        while True:
-            #=======================================================================
-            # Knock on stdout until Minecraft starts
-            # talking back. It is possible to not do this
-            # and simply make the below sleep longer, but
-            # in that case the sleep needs to be ~0.1 which
-            # is non-trivial to a human.
-            #=======================================================================
-            try:
-                yield sub('\n', '', self.queue.get_nowait())
-            except Queue.Empty:
-                pass
-            else:
-                break
+        '''Retrieves a generator of the Minecraft's current stdout content.'''
+        #=======================================================================
+        # This is essentially a do-while, the point being that this Python should wait for Minecraft
+        # to start reporting back before the attempts counter starts to increment.
+        #=======================================================================
+        yield sub('\n', '', self.queue.get())
         attempts = 0
-        while True:
+        while attempts >= MaxAttempts:
             #===================================================================
-            # @TODO This should really be in the config file since it can easily be tuned
+            # @TODO This pollingPeriod/MaxAttemps thing should really be in the config file since it can easily be tuned
             # depending on the machine this is running on. Put it under a "Don't
             # touch unless you know what you're doing" section.
             #
@@ -61,11 +58,11 @@ class StdoutStreamer(object):
             # was to repeatedly attempt to retrieve from the stdout queue at a reduced frequency
             # (set to 1kHz). Once MaxAttempts of consecutive Queue.Empty exceptions are hit we give up
             # and conclude that Minecraft has gone silent.
+            #
+            # If you know of a better way then please contact me at chris@chenderson.org.
             #===================================================================
             sleep(pollingPeriod)
             try:
                 yield sub('\n', '', self.queue.get_nowait())
-            except Queue.Empty:
+            except Empty:
                 attempts += 1
-                if attempts >= MaxAttempts:
-                    break

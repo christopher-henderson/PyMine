@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 from functools import wraps
-from Common.configReader import ConfigReader
+from src.common import Config
 import daemon
 import daemon.pidfile
 
@@ -10,16 +10,14 @@ def Daemonize(function):
     '''
     @wraps(function)
     def wrapper(*args, **kwargs):
-        config = ConfigReader()
         context = daemon.DaemonContext(
             working_directory = '/',
-            uid = config.getUID(),
-            gid = config.getGID(),
-            pidfile=daemon.pidfile.PIDLockFile(config.getPIDFile())
+            uid = Config.getUID(),
+            gid = Config.getGID(),
+            pidfile=daemon.pidfile.PIDLockFile(Config.getPIDFile())
             )
-        if config.getUmask() is not None:
-            context.umask = config.getUmask()
-        del config
+        if Config.getUmask() is not None:
+            context.umask = Config.getUmask()
         with context:
             function(*args, **kwargs)
     return wrapper

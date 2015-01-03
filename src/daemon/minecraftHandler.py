@@ -3,8 +3,8 @@ import subprocess
 import psutil
 from shlex import split
 from os import chdir
-from Common.selfAwareDecorator import SelfAwareDecorator
-from Daemon.stdoutStreamer import StdoutStreamer
+from src.tools.instanceDecorator import InstanceDecorator
+from .stdoutStreamer import StdoutStreamer
 
 class Minecraft(object):
 
@@ -15,20 +15,21 @@ class Minecraft(object):
         self.server = None
         self.stdout = StdoutStreamer()
 
-    @SelfAwareDecorator
-    def ManageStdout(self, function, MaxAttempts=50):
-        self.stdout.flush()
-        function()
-        return self.stdout.retrieve(MaxAttempts=MaxAttempts)
-
-    @SelfAwareDecorator
+    @InstanceDecorator
     def CheckStatus(self, function, desiredStatus=None, msg=''):
+        '''
+        If the desired status is not met, then return msg to
+        the service module and do not execute the called method.
+        Else execute the called method.
+        '''
+
         if desiredStatus is self.serverStatus():
             return function()
         else:
             return [msg]
 
     def serverStatus(self):
+        '''Returns a boolean of the status of the Minecraft server.'''
         try:
             zombie = psutil.Process(self.server.pid).status()
         except (psutil.NoSuchProcess, AttributeError):
@@ -46,6 +47,18 @@ class Minecraft(object):
             else:
                 status = True
         return status
+
+    @InstanceDecorator
+    def ManageStdout(self, function, MaxAttempts=50):
+        '''
+        Decorated methods automatically flush the stale content
+        of Minecraft's stdout, performs their duties, and returns
+        Minecraft's response as a generator from StdoutStreamer.retrieve.
+        '''
+
+        self.stdout.flush()
+        function()
+        return self.stdout.retrieve(MaxAttempts=MaxAttempts)
 
     @CheckStatus(desiredStatus=False, msg='The Minecraft server is running.')
     @ManageStdout(MaxAttempts=500)
@@ -68,4 +81,5 @@ class Minecraft(object):
     @CheckStatus(desiredStatus=True, msg='The Minecraft server is stopped.')
     @ManageStdout()
     def arbitrary(self, command):
+        '''Passes the raw command to Minecraft.'''
         self.server.stdin.write('{COMMAND}\n'.format(COMMAND=command))

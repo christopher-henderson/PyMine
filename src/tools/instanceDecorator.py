@@ -1,6 +1,6 @@
 from functools import wraps
 
-def SelfAwareDecorator(outerFunction):
+def InstanceDecorator(outerFunction):
     '''
     The decorated class method itself becomes a decorator
     that is aware of the class instance's methods and attributes.

@@ -1,7 +1,7 @@
 from functools import wraps
 from threading import Thread
 
-def Threadify(function):
+def Threaded(function):
     '''
     Every call of the decorated function will spawn a
     daemonized thread. Returns a threading.Thread object.
