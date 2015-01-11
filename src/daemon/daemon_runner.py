@@ -1,9 +1,15 @@
 #!/usr/bin/env python
 from __future__ import absolute_import
+#from sys import path
+#from os.path import dirname
+#path.append(dirname(dirname(__file__)))
+#from src.ConfigService import Config
 from .DaemonTools import Daemonize
 from .DaemonTools import BindToSocket
 from .Management import Dispatcher
 
+
+#print dirname(dirname(__file__))
 
 def responseClosure(connection):
     #===========================================================================
@@ -14,17 +20,13 @@ def responseClosure(connection):
     # itertools.chain object containing generators which themselves contain strings.
     #===========================================================================
     def responseWrapper(iterable):
-        from src.debug import say
-        say(iterable.__dict__['__next__'])
         for item in iterable:
             if isinstance(item, str):
                 connection.send(item)
                 connection.recv(1024) # Receive ACK
-                say('ack')
             else:
                 responseWrapper(item)
         connection.send("EOF")
-        say('EOFed')
     return responseWrapper
 
 @Daemonize
@@ -38,7 +40,7 @@ def main():
             connection, address = socket.accept()
             respondWith = responseClosure(connection)
             command = connection.recv(1024)
-            while command != 'exit' and not kill(command):
+            while command and not kill(command):
                 respondWith(dispatcher.execute(command))
                 command = connection.recv(1024)
             connection.close()

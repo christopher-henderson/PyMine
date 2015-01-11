@@ -66,7 +66,7 @@ class DaemonHandler:
             # you kill -9, so now we have to clean up the orphaned pidfile
             # before initiating startup.
             #===========================================================
-        #Popen(['python', '{PATH}/daemon_runner.py'.format(PATH='/home/chris/pymine/src')], close_fds=True, bufsize=1)
+        #Popen(['python', '{PATH}/pymine'.format(PATH='/home/chris/pymine'), '--daemon'], close_fds=True, bufsize=1)
         multiprocess(target=Daemon).start()
         self.connectToSocket()
         self.pid = self.getDaemonPID()
