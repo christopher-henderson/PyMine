@@ -1,0 +1,11 @@
+[Unit]
+Description=The PyMine Minecraft daemon.
+
+[Service]
+Type=forking
+PIDFile=/var/run/pymine/pymine.pid
+ExecStart=/usr/bin/pymine start
+ExecStop=/usr/bin/pymine stop
+
+[Install]
+WantedBy=multi-user.target
