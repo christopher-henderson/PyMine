@@ -12,7 +12,6 @@ except ImportError:
     # Python 3
     #===========================================================================
     from queue import Queue, Full, Empty
-from src.debug import say
 
 class StdoutStreamer(object):
 
@@ -47,7 +46,7 @@ class StdoutStreamer(object):
         #=======================================================================
         yield sub('\n', '', self.queue.get())
         attempts = 0
-        while attempts >= MaxAttempts:
+        while attempts <= MaxAttempts:
             #===================================================================
             # @TODO This pollingPeriod/MaxAttemps thing should really be in the config file since it can easily be tuned
             # depending on the machine this is running on. Put it under a "Don't

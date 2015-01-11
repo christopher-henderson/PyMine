@@ -93,7 +93,7 @@ class DaemonHandler:
     def stop(self):
         if self.isRunning():
             self.sock.send('kill')
-            self.getResponse()
+            #self.getResponse()
             self.sock.close()
         else:
             print ('The PyMine daemon is not running.')

@@ -1,23 +1,19 @@
-#!/usr/bin/env python
 from __future__ import absolute_import
-#from sys import path
-#from os.path import dirname
-#path.append(dirname(dirname(__file__)))
-#from src.ConfigService import Config
 from .DaemonTools import Daemonize
 from .DaemonTools import BindToSocket
 from .Management import Dispatcher
+from src.debug import Logger
 
-
-#print dirname(dirname(__file__))
 
 def responseClosure(connection):
     #===========================================================================
     # The purpose of this recursion is that if a command was sent
-    # to a single Minecraft server then we will receive back a list
+    # to a single Minecraft server then we will receive back a generator
     # of strings. However, if the user provided a regex for broadcasting
     # a command to multiple Minecrafter servers then we will receive an
     # itertools.chain object containing generators which themselves contain strings.
+    #
+    # This marches down the chain of iterables until a collection of strings is reached.
     #===========================================================================
     def responseWrapper(iterable):
         for item in iterable:
@@ -31,7 +27,6 @@ def responseClosure(connection):
 
 @Daemonize
 def main():
-    
     socket = BindToSocket()
     kill = lambda cmd: cmd == 'kill'
     command = None
@@ -44,28 +39,3 @@ def main():
                 respondWith(dispatcher.execute(command))
                 command = connection.recv(1024)
             connection.close()
-
-
-#===============================================================================
-# @Daemonize
-# def main():
-#     socket = BindToSocket()
-#     respondWith = responseClosure(socket)
-#     command = socket.recv(1024)
-#     with Dispatcher() as dispatcher:
-#         for i in xrange(5):
-#             for j in dispatcher.execute(command):
-#                 print (j)
-#===============================================================================
-
-#===============================================================================
-# def test():
-#     from time import sleep
-#     socket = BindToSocket()
-#     with ServerInterface() as multicaster:
-#         communicator = Communicator(multicaster, socket)
-#         for i in xrange(5):
-#             communicator.execute("restart > all")
-#             sleep(2)
-# test()
-#===============================================================================

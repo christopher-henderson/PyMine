@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 from functools import wraps
 from src.ConfigService import Config
+from src.debug import Logger
 import daemon
 import daemon.pidfile
 
@@ -30,10 +31,14 @@ def Daemonize(function):
             working_directory = '/',
             uid = Config.getUID(),
             gid = Config.getGID(),
+            files_preserve=[Logger.fileno],
             pidfile=daemon.pidfile.PIDLockFile(Config.getPIDFile())
             )
         if Config.getUmask() is not None:
             context.umask = Config.getUmask()
         with context:
-            function(*args, **kwargs)
+            try:
+                function(*args, **kwargs)
+            except Exception as e:
+                Logger.critical(e)
     return wrapper
