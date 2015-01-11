@@ -1,5 +1,4 @@
-#from bin.sanityCheck.importCheck import checkImports
-#checkImports()
+from src.debug import Logger
 from .parseArgs import ParseArgs
 from .daemonHandler import DaemonHandler
 from readline import parse_and_bind
