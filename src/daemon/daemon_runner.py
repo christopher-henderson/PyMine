@@ -4,7 +4,6 @@ from .DaemonTools import BindToSocket
 from .Management import Dispatcher
 from src.debug import Logger
 
-
 def responseClosure(connection):
     #===========================================================================
     # The purpose of this recursion is that if a command was sent

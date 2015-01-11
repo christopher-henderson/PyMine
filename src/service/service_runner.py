@@ -2,6 +2,9 @@ from src.debug import Logger
 from .parseArgs import ParseArgs
 from .daemonHandler import DaemonHandler
 from readline import parse_and_bind
+from sys import version
+if version[0] is not '2':
+    raw_input = input
 
 @ParseArgs
 def main(interactive, args):

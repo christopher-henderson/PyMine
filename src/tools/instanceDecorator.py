@@ -40,8 +40,8 @@ def InstanceDecorator(outerFunction):
                     # something bad with the innerFunction while in the decorator. 
                     #===========================================================
                     finalArgs = innerArgs + funcArgs
-                    finalKwargs = dict(innerKwargs.items() + funcKwargs.items())
-                    return innerFunction(self, *finalArgs, **finalKwargs)
+                    innerKwargs.update(funcKwargs)
+                    return innerFunction(self, *finalArgs, **innerKwargs)
                 return outerFunction(self, f, *decArgs, **decKwargs)
             return inner
         return wrapper
