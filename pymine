@@ -1,13 +1,8 @@
 #!/usr/bin/env python
-from sys import argv
 from src.service.service_runner import main
-from src.daemon.daemon_runner import main as dMain
 
 if __name__ == '__main__':
-    if len(argv) < 2:
-        try:
-            main()
-        except KeyboardInterrupt as interrupt:
-            print (interrupt)
-    elif argv[1] == '--daemon':
-        dMain()
+    try:
+        main()
+    except KeyboardInterrupt as interrupt:
+        print (interrupt)
