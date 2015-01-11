@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 from functools import wraps
-from src.common import Config
+from src.ConfigService import Config
 import daemon
 import daemon.pidfile
 
@@ -10,6 +10,7 @@ def Daemonize(function):
     '''
     @wraps(function)
     def wrapper(*args, **kwargs):
+        daemon.daemon.is_process_started_by_superserver = lambda: False
         context = daemon.DaemonContext(
             working_directory = '/',
             uid = Config.getUID(),

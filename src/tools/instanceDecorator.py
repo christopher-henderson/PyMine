@@ -9,7 +9,7 @@ def InstanceDecorator(outerFunction):
 
     Usage:
 
-    @SelfAwareDecorator
+    @InstanceDecorator
     def StatusCheck(self, function, desiredStatus, ErrorMsg='Error'):
         if desiredStatus is self.status():
             function()

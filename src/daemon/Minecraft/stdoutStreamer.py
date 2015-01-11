@@ -12,6 +12,7 @@ except ImportError:
     # Python 3
     #===========================================================================
     from queue import Queue, Full, Empty
+from src.debug import say
 
 class StdoutStreamer(object):
 

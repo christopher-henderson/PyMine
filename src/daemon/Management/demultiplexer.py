@@ -1,35 +1,28 @@
 from __future__ import absolute_import
 from re import match, error
 from itertools import chain
-from src.daemon.minecraftHandler import Minecraft
-from src.common.configReader import ConfigReader
+from ..Minecraft import Minecraft
+from src.ConfigService import Config
 from src import PyMineExceptions
 
-class ServerInterface(object):
+class Demultiplexer(object):
     
     def __init__(self):
-        self.config = ConfigReader()
-        self.servers = {serverName: Minecraft(config) for serverName,config in self.config.getMinecraftConfig().items()}
-        self.using = self.config.getDefault()
+        self.servers = {serverName: Minecraft(config) for serverName,config in Config.getMinecraftConfig().items()}
+        self.using = Config.getDefault()
 
     def __iter__(self):
         for server in sorted(self.servers):
             yield server
 
-    def __enter__(self):
-        for response in self.startServer(pattern='.*'):
-            #===================================================================
-            # It is necessary to iterate over the returned
-            # generator, otherwise self is returned immediately
-            # despite the startup process being incomplete.
-            #===================================================================
-            pass
-        return self
-
-    def __exit__(self, type, value, traceback):
-        self.stopServer(pattern='.*')
-
     def addServer(self, javaArgs, pattern=None):
+        #=======================================================================
+        # Haven't really thought this all the way through yet.
+        #=======================================================================
+        try:
+            raise NotImplementedError
+        except Exception as e:
+            return [e]
         '''
         Adds the specified Minecraft server to the currently running
         instance of PyMine. The new Minecraft server is not automatically
@@ -44,6 +37,13 @@ class ServerInterface(object):
             raise PyMineExceptions.DuplicateMinecraftServer(pattern)
 
     def removeServer(self, pattern=None):
+        #=======================================================================
+        # Haven't really thought this all the way through yet.
+        #=======================================================================
+        try:
+            raise NotImplementedError
+        except Exception as e:
+            return [e]
         '''
         Cleanly stops and removes the specified Minecraft server from
         the currently running instance of PyMine.

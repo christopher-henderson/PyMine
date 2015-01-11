@@ -1,10 +1,10 @@
 from __future__ import absolute_import
-from Common.configReader import ConfigReader
-from os import (stat, remove)
+from src.ConfigService import Config
+from os import stat, remove
 import socket
 
 def BindToSocket():
-    SOCKET = ConfigReader().getSocket()
+    SOCKET = Config.getSocket()
     try:
         stat(SOCKET)
     except:

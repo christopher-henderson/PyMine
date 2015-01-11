@@ -24,42 +24,42 @@ class ConfigReader(object):
     def LazyLoad(self, function):
         if not self.config:
             self.loadConfig()
-        function()
+        return function()
 
-    def loadConfig(self, config):
+    def loadConfig(self):
         with open(self.configFile) as conf:
             self.config = load(conf)
 
-    @LazyLoad
+    @LazyLoad()
     def getConfig(self):
         return self.config
 
-    @LazyLoad
+    @LazyLoad()
     def getDefault(self):
         for section in self.config.get('servers'):
             if self.config['servers'][section].get('DEFAULT'):
                 return section
 
-    @LazyLoad
+    @LazyLoad()
     def getMinecraftConfig(self):
         return {server:config for server,config in self.config.get('servers').items()}
 
-    @LazyLoad
+    @LazyLoad()
     def getUID(self):
         return getpwnam(self.config.get('USER')).pw_uid
 
-    @LazyLoad
+    @LazyLoad()
     def getGID(self):
         return getpwnam(self.config.get('USER')).pw_gid
 
-    @LazyLoad
+    @LazyLoad()
     def getPIDFile(self):
         return self.config.get('PIDFILE')
 
-    @LazyLoad
+    @LazyLoad()
     def getSocket(self):
         return self.config.get('UNIX_SOCKET')
 
-    @LazyLoad
+    @LazyLoad()
     def getUmask(self):
         return self.config.get('UMASK')

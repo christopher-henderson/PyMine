@@ -1,10 +1,12 @@
 from __future__ import absolute_import
+from multiprocessing import Process as multiprocess
+from src.daemon.daemon_runner import main as Daemon
 import socket
 import os
 from psutil import Process, NoSuchProcess
 from subprocess import Popen
 import tarfile
-from src.common import Config
+from src.ConfigService import Config
 from time import time, strftime
 from src.PrintBacks import printCopyright, printLicense, printHelp
 SOCKET_TIMEOUT = 30
@@ -17,13 +19,13 @@ class DaemonHandler:
         self.pid = self.getDaemonPID()
         self.scriptHome = None
         self.sock = None
-        if self._isRunning():
-            self._connectToSocket()
+        if self.isRunning():
+            self.connectToSocket()
 
     def getDaemonPID(self):
         '''Returns an integer of the PID. Returns 0 if the PID file could not be accessed.'''
         try:
-            with open(self.pidfile) as pidfile:
+            with open(self.pidFile) as pidfile:
                 return int(pidfile.readline())
         except IOError:
             return 0
@@ -56,7 +58,7 @@ class DaemonHandler:
     def startDaemon(self):
         self.pid = self.getDaemonPID()
         if self.pid is not 0:
-            os.remove(self.pidfile)
+            os.remove(self.pidFile)
             #===========================================================
             # That is, we retrieved a PID but there's nothing actually
             # running at that ID.
@@ -64,7 +66,8 @@ class DaemonHandler:
             # you kill -9, so now we have to clean up the orphaned pidfile
             # before initiating startup.
             #===========================================================
-        Popen(['python', '{PATH}/pymineDaemon.py'.format(PATH=self.scriptHome)], close_fds=True, bufsize=1)
+        #Popen(['python', '{PATH}/daemon_runner.py'.format(PATH='/home/chris/pymine/src')], close_fds=True, bufsize=1)
+        multiprocess(target=Daemon).start()
         self.connectToSocket()
         self.pid = self.getDaemonPID()
 
@@ -72,7 +75,7 @@ class DaemonHandler:
         response = self.sock.recv(1024)
         while response != "EOF":
             print (response)
-            self.sock.send('Continue')
+            self.sock.send('ACK')
             response = self.sock.recv(1024)
 
     def start(self):
@@ -82,22 +85,14 @@ class DaemonHandler:
             # to do a clean startup of the pymine_daemon and Minecraft process.
             #===============================================================
             self.startDaemon()
-            if self.isRunning():
-                self.sock.send('start')
-                self.getResponse()
-            else:
-                print ('An error occurred while starting the Pymine daemon.')
+            if not self.isRunning():
+                print ('An error occurred while starting the PyMine daemon.')
         else:
-            #===============================================================
-            # The pymine_daemon is running and we are connected, now we need to ask the pymine_daemon
-            # if Minecraft itself is running. If not, start it up.
-            #===============================================================
-            self.sock.send('start')
-            self.getResponse()
+            print ('The PyMine daemon is already running.')
 
     def stop(self):
         if self.isRunning():
-            self.sock.send('stop')
+            self.sock.send('kill')
             self.getResponse()
             self.sock.close()
         else:
@@ -141,21 +136,17 @@ class DaemonHandler:
             print ('PyMine has made a world backup.')
 
     def runCommand(self, command):
-        if command == 'start':
+        if command == 'start pymine':
             self.start()
-        elif command == 'stop':
+        elif command == 'stop pymine':
             self.stop()
-        elif command == 'restart':
+        elif command == 'restart pymine':
             self.restart()
-        elif command == 'status':
-            self.status()
-        elif command == 'backup':
-            self.backup()
-        elif command == ('license'):
+        elif command == 'license':
             printLicense()
-        elif command == ('pmhelp'):
+        elif command == 'pmhelp':
             printHelp()
-        elif command == ('copyright'):
+        elif command == 'copyright':
             printCopyright()
         #=======================================================================
         # At this point the command appears to be for the Minecraft daemon
