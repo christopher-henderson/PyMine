@@ -1,14 +1,16 @@
-from bin.sanityCheck.importCheck import checkImports
-checkImports()
-from bin.decorators import ParseArgs
-from bin.classes.daemonHandler import DaemonHandler
-import readline
+from src.debug import Logger
+from .parseArgs import ParseArgs
+from .daemonHandler import DaemonHandler
+from readline import parse_and_bind
+from sys import version
+if version[0] is not '2':
+    raw_input = input
 
 @ParseArgs
 def main(interactive, args):
     pymine = DaemonHandler()
     if interactive:
-        readline.parse_and_bind('set editing-mode vi')
+        parse_and_bind('set editing-mode vi')
         print ('PyMine version v1.1')
         print ('Type "pmhelp", "copyright" or "license" for more information.')
         command = raw_input('>>> ').strip()

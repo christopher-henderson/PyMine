@@ -4,8 +4,8 @@ Description=The PyMine Minecraft daemon.
 [Service]
 Type=forking
 PIDFile=/var/run/pymine/pymine.pid
-ExecStart=/usr/bin/pymine start
-ExecStop=/usr/bin/pymine stop
+ExecStart=/usr/bin/pymine start pymine
+ExecStop=/usr/bin/pymine stop pymine
 
 [Install]
 WantedBy=multi-user.target
