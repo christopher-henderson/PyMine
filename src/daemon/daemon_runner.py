@@ -15,6 +15,15 @@ def responseClosure(connection):
     # This marches down the chain of iterables until a collection of strings is reached.
     #===========================================================================
     def responseWrapper(iterable):
+        #=======================================================================
+        # This for-each-in is where ALL execution of the daemon actually occurs.
+        # Everything deeper within the daemon is actually just building the generators
+        # that are executed at THIS loop.
+        # 
+        # If a command was sent to one Minecraft server, we get a generator of strings.
+        # If a command was demultiplexed to multiple servers, then we get a itertools.chain of generators.
+        # If an exception was raised then we get a list of exceptions.
+        #=======================================================================
         for item in iterable:
             if isinstance(item, str):
                 connection.send(item)
