@@ -10,7 +10,6 @@ def ParseArgs(function):
     '''
     @wraps(function)
     def decorator(*args, **kwargs):
-
         interactive = False
         arguments = []
         if len(argv) < 2:

@@ -3,8 +3,39 @@ import subprocess
 import psutil
 from shlex import split
 from os import chdir
-from src.tools.instanceDecorator import InstanceDecorator
 from .stdoutStreamer import StdoutStreamer
+from functools import wraps
+
+def EnforceStatus(desiredStatus=None, msg=''):
+    def wrapper(function):
+        @wraps(function)
+        def decorator(self, *args, **kwargs):
+            '''
+            If the desired status is not met, then return msg to
+            the service module and do not execute the called method.
+            Else execute the called method.
+            '''
+            if desiredStatus is self.serverStatus():
+                return function(self, *args, **kwargs)
+            else:
+                return (msg,)
+        return decorator
+    return wrapper
+
+def ManageStdout(MaxAttempts=50):
+    def wrapper(function):
+        @wraps(function)
+        def decorator(self, *args, **kwargs):
+            '''
+            Decorated methods automatically flush the stale content
+            of Minecraft's stdout, performs their duties, and returns
+            Minecraft's response as a generator from StdoutStreamer.retrieve.
+            '''
+            self.stdout.flush()
+            function(self, *args, **kwargs)
+            return self.stdout.retrieve(MaxAttempts=MaxAttempts)
+        return decorator
+    return wrapper
 
 class Minecraft(object):
 
@@ -14,19 +45,6 @@ class Minecraft(object):
         self.cmd.insert(0, 'java')
         self.server = None
         self.stdout = StdoutStreamer()
-
-    @InstanceDecorator
-    def CheckStatus(self, function, desiredStatus=None, msg=''):
-        '''
-        If the desired status is not met, then return msg to
-        the service module and do not execute the called method.
-        Else execute the called method.
-        '''
-
-        if desiredStatus is self.serverStatus():
-            return function()
-        else:
-            return [msg]
 
     def serverStatus(self):
         '''Returns a boolean of the status of the Minecraft server.'''
@@ -48,19 +66,7 @@ class Minecraft(object):
                 status = True
         return status
 
-    @InstanceDecorator
-    def ManageStdout(self, function, MaxAttempts=50):
-        '''
-        Decorated methods automatically flush the stale content
-        of Minecraft's stdout, performs their duties, and returns
-        Minecraft's response as a generator from StdoutStreamer.retrieve.
-        '''
-
-        self.stdout.flush()
-        function()
-        return self.stdout.retrieve(MaxAttempts=MaxAttempts)
-
-    @CheckStatus(desiredStatus=False, msg='The Minecraft server is running.')
+    @EnforceStatus(desiredStatus=False, msg='The Minecraft server is running.')
     @ManageStdout(MaxAttempts=500)
     def start(self):
         chdir(self.directory)
@@ -68,7 +74,7 @@ class Minecraft(object):
         self.stdout = StdoutStreamer(stdout=self.server.stdout)
         self.stdout.startStreamer()
 
-    @CheckStatus(desiredStatus=True, msg='The Minecraft server is stopped.')
+    @EnforceStatus(desiredStatus=True, msg='The Minecraft server is stopped.')
     @ManageStdout(MaxAttempts=500)
     def stop(self):
         self.server.stdin.write('stop\n')
@@ -78,7 +84,7 @@ class Minecraft(object):
         yield self.stop()
         yield self.start()
 
-    @CheckStatus(desiredStatus=True, msg='The Minecraft server is stopped.')
+    @EnforceStatus(desiredStatus=True, msg='The Minecraft server is stopped.')
     @ManageStdout()
     def arbitrary(self, command):
         '''Passes the raw command to Minecraft.'''

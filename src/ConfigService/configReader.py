@@ -1,8 +1,16 @@
 from __future__ import absolute_import
-from src.tools import InstanceDecorator
+from functools import wraps
 from yaml import load
 from os.path import dirname
 from pwd import getpwnam
+
+def LazyLoad(function):
+    @wraps(function)
+    def wrapper(self, *args, **kwargs):
+        if not self.config:
+            self.loadConfig()
+        return function(self, *args, **kwargs)
+    return wrapper
 
 class ConfigReader(object):
 
@@ -19,12 +27,6 @@ class ConfigReader(object):
     def __iter__(self):
         for section in self.config:
             yield self.config[section]
-
-    @InstanceDecorator
-    def LazyLoad(self, function):
-        if not self.config:
-            self.loadConfig()
-        return function()
 
     def loadConfig(self):
         with open(self.configFile) as conf:
